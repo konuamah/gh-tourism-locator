@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback, memo } from 'react'
+import Image from 'next/image'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import { Camera, ChevronLeft, ChevronRight, X } from 'lucide-react'
@@ -8,7 +9,6 @@ if (!mapboxgl.accessToken) {
   mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 }
 
-// Memoized ImageCarousel component to prevent unnecessary re-renders
 const ImageCarousel = memo(({ isOpen, images, currentIndex, onClose, onNext, onPrev }) => {
     if (!isOpen) return null;
     
@@ -29,9 +29,11 @@ const ImageCarousel = memo(({ isOpen, images, currentIndex, onClose, onNext, onP
                     <ChevronLeft size={30} />
                 </button>
 
-                <img 
-                    src={images[currentIndex]} 
-                    alt={`Image ${currentIndex + 1}`} 
+                <Image 
+                    src={`/${images[currentIndex]}`}
+                    alt={`Image ${currentIndex + 1}`}
+                    width={800}
+                    height={600}
                     className="w-full h-full object-contain rounded"
                 />
 
@@ -50,9 +52,13 @@ const ImageCarousel = memo(({ isOpen, images, currentIndex, onClose, onNext, onP
     );
 });
 
-// Create popup content outside component to avoid recreation
-const createPopupContent = (spot) => `
-    <div class="max-w-sm p-4">
+ImageCarousel.displayName = 'ImageCarousel';
+
+const createPopupElement = (spot, onImageClick) => {
+    const container = document.createElement('div');
+    container.className = 'max-w-sm p-4';
+    
+    container.innerHTML = `
         <h3 class="text-lg font-bold mb-2">${spot.name}</h3>
         <div class="grid grid-cols-2 gap-2 mb-3">
             <div>
@@ -69,10 +75,9 @@ const createPopupContent = (spot) => `
             </div>
             <div>
                 <img 
-                    src="${spot.images?.[0] || ''}" 
-                    alt="${spot.name}" 
+                    src="/${spot.images?.[0] || ''}" 
+                    alt="${spot.name}"
                     class="w-full h-[150px] object-cover rounded cursor-pointer image-trigger"
-                    data-images="${JSON.stringify(spot.images || []).replace(/"/g, '&quot;')}"
                 />
             </div>
         </div>
@@ -84,18 +89,27 @@ const createPopupContent = (spot) => `
                 rel="noopener noreferrer"
                 class="text-blue-600 hover:underline flex items-center"
             >
-                <Camera size={16} className="mr-1" /> Street View
+                <span class="mr-1">📍</span> Street View
             </a>
         </div>
-    </div>
-`;
+    `;
+
+    // Add click event listener to the image
+    const image = container.querySelector('.image-trigger');
+    if (image) {
+        image.addEventListener('click', () => {
+            onImageClick(spot.images || []);
+        });
+    }
+
+    return container;
+};
 
 const TourismMap = ({ selectedLocation }) => {
     const mapContainer = useRef(null);
     const map = useRef(null);
     const markersRef = useRef(new Map());
     const activePopupRef = useRef(null);
-    const imageClickListener = useRef(null);
 
     const [imageCarousel, setImageCarousel] = useState({
         isOpen: false,
@@ -103,16 +117,12 @@ const TourismMap = ({ selectedLocation }) => {
         currentIndex: 0
     });
 
-    const handleImageClick = useCallback((e) => {
-        const imageTrigger = e.target.closest('.image-trigger');
-        if (imageTrigger) {
-            const images = JSON.parse(imageTrigger.dataset.images.replace(/&quot;/g, '"'));
-            setImageCarousel({
-                isOpen: true,
-                images,
-                currentIndex: 0
-            });
-        }
+    const handleImageClick = useCallback((images) => {
+        setImageCarousel({
+            isOpen: true,
+            images,
+            currentIndex: 0
+        });
     }, []);
 
     const handleCarouselClose = useCallback(() => {
@@ -152,11 +162,15 @@ const TourismMap = ({ selectedLocation }) => {
 
         map.current.on('load', () => {
             touristSpots.forEach((spot) => {
+                const popupElement = createPopupElement(spot, handleImageClick);
+                
                 const popup = new mapboxgl.Popup({
                     closeButton: true,
                     closeOnClick: true,
                     maxWidth: '400px',
-                }).setHTML(createPopupContent(spot));
+                });
+                
+                popup.setDOMContent(popupElement);
 
                 const marker = new mapboxgl.Marker({ color: '#3B82F6' })
                     .setLngLat(spot.coordinates)
@@ -165,15 +179,9 @@ const TourismMap = ({ selectedLocation }) => {
 
                 markersRef.current.set(spot.name, { marker, popup });
             });
-
-            imageClickListener.current = handleImageClick;
-            document.addEventListener('click', imageClickListener.current);
         });
 
         return () => {
-            if (imageClickListener.current) {
-                document.removeEventListener('click', imageClickListener.current);
-            }
             map.current?.remove();
         };
     }, [handleImageClick]);
@@ -214,5 +222,7 @@ const TourismMap = ({ selectedLocation }) => {
         </div>
     );
 };
+
+TourismMap.displayName = 'TourismMap';
 
 export default memo(TourismMap);
