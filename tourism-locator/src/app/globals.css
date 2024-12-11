@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Add this CSS to your component or global styles */
+.mapboxgl-popup-close-button {
+  background-color: black !important; /* Change button color to black */
+  width: 30px !important;  /* Increase the size of the button */
+  height: 30px !important; /* Increase the size of the button */
+  border-radius: 50% !important; /* Make the button round */
+  color: white !important; /* Change the icon color to white */
+  font-size: 16px !important; /* Adjust font size */
+}
+
+.mapboxgl-popup-close-button:focus {
+  outline: none; /* Remove focus outline */
+}

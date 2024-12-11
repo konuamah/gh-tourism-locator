@@ -1,17 +1,17 @@
-import Link from 'next/link'
+import Link from 'next/link';
 
 export default function Header() {
   return (
-    <header className="flex items-center h-16 px-4 border-b shrink-0 md:px-6">
+    <header className="flex items-center h-16 px-4 ml-24 border-b shrink-0 md:px-6">
       <Link href="/" className="flex items-center gap-2">
         <MapIcon className="w-6 h-6" />
         <span className="font-semibold">Ghana Tourism Locator</span>
       </Link>
     </header>
-  )
+  );
 }
 
-function MapIcon(props: React.SVGProps<SVGSVGElement>) {
+function MapIcon(props) {
   return (
     <svg
       {...props}
@@ -29,6 +29,5 @@ function MapIcon(props: React.SVGProps<SVGSVGElement>) {
       <line x1="9" x2="9" y1="3" y2="18" />
       <line x1="15" x2="15" y1="6" y2="21" />
     </svg>
-  )
+  );
 }
-

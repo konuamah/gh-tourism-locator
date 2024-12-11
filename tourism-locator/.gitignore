@@ -1,0 +1,69 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
+node_modules/
+
+# Production build output
+.next/
+out/
+
+# Next.js files
+*.next
+*.env.local
+*.env.development
+*.env.test
+*.env.production
+
+# Local environment variables
+.env.local
+
+# Miscellaneous
+.DS_Store
+*.swp
+*.swo
+*.idea
+.vscode/
+*.bak
+*.orig
+
+# Mac system files
+.DS_Store
+
+# Linux/Mac swap files
+*.swp
+
+# Windows thumbnail cache
+Thumbs.db
+
+# Build artifacts
+build/
+dist/
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Coverage reports
+coverage/
+
+# Optional: If using specific tools, add their generated files
+# Uncomment these lines if applicable
+# .eslintcache
+# .stylelintcache
+# .turbo/
+
+# Ignore storybook files if using it
+.storybook/
+
+# Ignore next-image cache
+public/images/cache/
+
+# Ignore IDE and editor settings
+.idea/
+.vscode/
