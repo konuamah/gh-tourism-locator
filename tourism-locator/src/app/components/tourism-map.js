@@ -83,14 +83,7 @@ const createPopupElement = (spot, onImageClick) => {
         </div>
         <p class="text-sm text-gray-700 mb-2">${spot.history}</p>
         <div class="flex justify-between items-center">
-            <a 
-                href="https://www.google.com/maps/search/?api=1&query=${spot.coordinates[1]},${spot.coordinates[0]}" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                class="text-blue-600 hover:underline flex items-center"
-            >
-                <span class="mr-1">📍</span> Street View
-            </a>
+            
         </div>
     `;
 
